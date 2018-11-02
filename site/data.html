@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="assets/favicon.ico" sizes="16x16">
+    <link rel="stylesheet" href="assets/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/toastr.min.css">
+
+    <title>Data</title>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">IOT</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="data.html">Data <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">Settings</a>
+                    </li>
+                    </ul>
+                </div>
+                </nav>
+    </header>
+
+    <main role="main">
+
+        <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Data</h1>
+            <p class="lead text-muted">Humidity & Temperature.</p>
+            <p>
+            <button id="truncate" type="button" class="btn btn-danger">Truncate</button>
+            </p>
+        </div>
+        </section>
+
+        <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row" id="table-row">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Humidity</th>
+                            <th scope="col">Temperature</th>
+                            <th scope="col">Setting ID</th>
+                            <th scope="col">Speed</th>
+                            <th scope="col">Date Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div id="chartHumidityContainer"></div>
+        </div>
+        </div>
+
+    </main>
+    <footer class="text-muted">
+        <div class="container">
+            <p class="float-right">
+            <a href="#">Back to top</a>
+            </p>
+        </div>
+    </footer>
+    <script src="assets/jquery-3.3.1.min.js"></script>
+    <script src="assets/popper.min.js"></script>
+    <script src="assets/bootstrap.min.js"></script>
+    <script src="assets/toastr.min.js"></script>
+    <script src="assets/highcharts.js"></script>
+
+    <script>
+        function displayEmptyTable(){
+            $('table').hide();
+            $('#table-row').html('<div class="container">No data present.</div>');
+        }
+
+        function getSmallest(a, b, c){ 
+            var smallest;
+            if(a<b){
+                smallest=a;
+            }else{
+                smallest=b;
+            }
+            if(c<smallest){
+                smallest=c;
+            }
+            return smallest;
+        }
+  
+        function getSpeed(humidity, temperature, setting){
+            var lowh = setting['lowh'];
+            var lowt = setting['lowt'];
+            var mediumh = setting['mediumh'];
+            var mediumt = setting['mediumt'];
+            var highh = setting['highh'];
+            var hight = setting['hight'];
+
+            var x1 = (100/(highh-lowh))*(humidity-lowh);
+            var y1 = (100/(hight-lowt))*(temperature-lowt);
+            var x2 = 0;
+            var y2= 0;
+            var a = Math.sqrt(Math.pow(x1-x2,2)+(Math.pow(y1-y2,2)));
+            x2 = (100/(highh-lowh))*(mediumh-lowh);
+            y2= (100/(hight-lowt))*(mediumt-lowt);          
+            var b = Math.sqrt(Math.pow(x1-x2,2)+(Math.pow(y1-y2,2)));
+            x2=100;
+            y2=100;
+            var c = Math.sqrt(Math.pow(x1-x2,2)+(Math.pow(y1-y2,2)));
+            var smallest = getSmallest(a,b,c);
+            if(smallest == a){
+                return "Low";
+            }else if(smallest == b){
+                return "Medium";
+            }else if(smallest == c){
+                return "High";
+            }else{
+                return "Unknown";
+            }
+        }
+
+        function loadChart(humidity, temperature){
+
+            Highcharts.chart('chartHumidityContainer', {
+                title: {
+                    text: 'Graph'
+                },
+
+                xAxis: {
+                    title: {
+                        text: 'DateTime'
+                    },
+                    type: 'datetime'
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Value'
+                    }
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        }
+                    }
+                },
+
+                series: [{
+                    name: 'Humidity',
+                    data: humidity
+                }, {
+                    name: 'Temperature',
+                    data: temperature
+                }],
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+        }
+
+        $( document ).ready(function() {
+            $.ajax({
+                url: "api/data.php",
+                type: "GET",
+                success: function(result){
+                    var arr = JSON.parse(result);
+                    var str = "";
+                    var humidity=[], temperature=[];
+                    if(arr.length > 0){
+                        for (var i=0;i<arr.length;i++) {
+                            var obj = arr[i];
+                            var curr_date = new Date(obj['date']);
+                            humidity.push({x: curr_date, y: parseInt(obj["humidity"])});
+                            temperature.push({x: curr_date, y: parseInt(obj["temperature"])});
+                            var speed="";
+                            var setting_id="";
+                            if(!obj.hasOwnProperty('auto') && !obj.hasOwnProperty('manual') ){
+                                setting_id = "Unknown";
+                                speed="Unknown";
+                            }else{
+                                if(obj.hasOwnProperty('auto')){
+                                    setting_id = obj['auto']['id']+" (Auto)";
+                                    speed = getSpeed(obj["humidity"], obj["temperature"], obj['auto']);
+                                }else{
+                                    setting_id = obj['manual']['id']+" (Manual)";
+                                    speed = obj['manual']['speed'];
+                                }
+                            }
+                            str = str + "<tr><th scope=\"row\">"+obj["id"]+"</th><td>"+obj["humidity"]+"</td><td>"+obj["temperature"]+"</td><td>"+setting_id+"</td><td>"+speed+"</td><td>"+obj["date"]+"</td></tr>";
+                        }
+                        loadChart(humidity, temperature);
+                        $('tbody').append(str);
+                    }else{
+                        displayEmptyTable();
+                    }
+                }
+            });
+        });
+
+        $('#truncate').on("click",function(){
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "7500",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            toastr["info"]("Are you sure you want to clear all the data? <a id=\"yes-truncate\" class=\"btn btn-primary my-2\">Yes</a><a class=\"btn btn-danger my-2\">No</a>");
+            
+            $("#yes-truncate").on('click',function(){
+                $.ajax({
+                    url: "api/data.php",
+                    type: "POST",
+                    data: {type: "DELETE"},
+                    success: function(result){
+                        if(result=="true"){
+                            toastr["success"]("Data successfully truncated.<a href=\"data.html\" class=\"btn btn-primary my-2\">Reload</a>");
+                        }else{
+                            toastr["error"]("There was some problem truncating the data.");
+                        }
+                    }
+                });
+            });  
+        });
+    </script>
+  </body>
+</html>

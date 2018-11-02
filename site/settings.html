@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="assets/favicon.ico" sizes="16x16">
+    <link rel="stylesheet" href="assets/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/toastr.min.css">
+
+    <title>Settings</title>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">IOT</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="data.html">Data</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="settings.html">Settings <span class="sr-only">(current)</span></a>
+                    </li>
+                    </ul>
+                </div>
+            </nav>
+    </header>
+
+    <main role="main">
+
+        <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Settings</h1>
+            <p class="lead text-muted">Automatic & Manual</p>
+            <p>
+            <button id="truncate_auto" type="button" class="btn btn-danger">Clear auto-settings (except latest)</button>
+            <button id="truncate_manual" type="button" class="btn btn-danger">Clear manual-settings</button>
+            </p>
+        </div>
+        </section>
+
+        <div class="album py-5 bg-light">
+            <h2 class="text-center">Auto<br>
+                <small class="text-muted">Lows, Mediums & Highs</small>
+            </h2>
+            
+            <div class="container">
+                <div class="row" id="table-row" style="margin-top:40px">
+                    <table class="table">
+                        <thead class="thead-dark text-center">
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col" colspan="3">Humidity</th>
+                                <th scope="col" colspan="3">Temperature</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Low H</th>
+                                <th scope="col">Medium H</th>
+                                <th scope="col">High H</th>
+                                <th scope="col">Low T</th>
+                                <th scope="col">Medium T</th>
+                                <th scope="col">High T</th>
+                                <th scope="col">Date Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auto_body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="card col">
+                            <div class="card-header">
+                                Add setting
+                            </div>
+                            <div class="card-body">
+                                    <form class="auto_form">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h5 class="card-title">Humidity</h5>
+                                                <div class="form-group">
+                                                    <label>Low</label>
+                                                    <input type="number" class="form-control" id="lowh" placeholder="Enter low humidity" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Medium</label>
+                                                    <input type="number" class="form-control" id="mediumh" placeholder="Enter medium humidity" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>High</label>
+                                                    <input type="number" class="form-control" id="highh" placeholder="Enter high humidity" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h5 class="card-title">Temperature</h5>
+                                                <div class="form-group">
+                                                    <label>Low</label>
+                                                    <input type="number" class="form-control" id="lowt" placeholder="Enter low temperature" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Medium</label>
+                                                    <input type="number" class="form-control" id="mediumt" placeholder="Enter medium temperature" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>High</label>
+                                                    <input type="number" class="form-control" id="hight" placeholder="Enter high temperature" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </form>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="text-center" style="margin-top: 3rem">Manual<br>
+                <small class="text-muted">Set speed manually.</small>
+            </h2>
+            
+            <div class="container text-center">
+                <div class="row" id="table-row" style="margin-top:40px">
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Speed</th>
+                                <th scope="col">Date Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manual_body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="card col">
+                            <div class="card-header">
+                                Set fan speed
+                            </div>
+                            <div class="card-body">
+                                    <form class="manual_form">
+                                        <div class="row">
+                                                <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                          <label class="input-group-text">Speed</label>
+                                                        </div>
+                                                        <select class="custom-select" id="speed">
+                                                          <option value="NULL" selected>None</option>
+                                                          <option value="Low">Low</option>
+                                                          <option value="Medium">Medium</option>
+                                                          <option value="High">High</option>
+                                                        </select>
+                                                </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </form>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="text-muted">
+        <div class="container">
+            <p class="float-right">
+            <a href="#">Back to top</a>
+            </p>
+        </div>
+    </footer>
+    <script src="assets/jquery-3.3.1.min.js"></script>
+    <script src="assets/popper.min.js"></script>
+    <script src="assets/bootstrap.min.js"></script>
+    <script src="assets/toastr.min.js"></script>
+    <script>
+
+        $( document ).ready(function() {
+            $.ajax({
+                url: "api/auto.php",
+                type: "GET",
+                success: function(result){
+                    var arr = JSON.parse(result);
+                    var str = "";
+                    for (var i=0;i<arr.length;i++) {
+                        var obj = arr[i];
+                        str = str + "<tr><th scope=\"row\">"+obj["id"]+"</th><td>"+obj["lowh"]+"</td><td>"+obj["mediumh"]+"</td><td>"+obj["highh"]+"</td><td>"+obj["lowt"]+"</td><td>"+obj["mediumt"]+"</td><td>"+obj["hight"]+"</td><td>"+obj["date"]+"</td></tr>";
+                    }
+                    $("#auto_body").append(str);
+                }
+            });
+            $.ajax({
+                url: "api/manual.php",
+                type: "GET",
+                success: function(result){
+                    var arr = JSON.parse(result);
+                    var str = "";
+                    for (var i=0;i<arr.length;i++) {
+                        var obj = arr[i];
+                        if(obj["speed"]==null){
+                            obj["speed"] = "None";
+                        }
+                        str = str + "<tr><th scope=\"row\">"+obj["id"]+"</th><td>"+obj["speed"]+"</td><td>"+obj["date"]+"</td></tr>";
+                    }
+                    $("#manual_body").append(str);
+                }
+            });
+        });
+
+        $('#truncate_auto').on("click",function(){
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "7500",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            toastr["info"]("Are you sure you want to clear all the auto-settings except the most recent? <a id=\"yes-truncate\" class=\"btn btn-primary my-2\">Yes</a><a class=\"btn btn-danger my-2\">No</a>");
+            $("#yes-truncate").on('click',function(){
+                $.ajax({
+                    url: "api/auto.php",
+                    type: "POST",
+                    data: {type: "DELETE"},
+                    success: function(result){
+                        if(result=="true"){
+                            toastr["success"]("Auto-settings successfully deleted!<a href=\"settings.html\" class=\"btn btn-primary my-2\">Reload</a>");
+
+                        }else{
+                            toastr["error"]("There was some problem deleting the auto-settings.");
+                        }
+                    }
+                });
+            });
+        });
+        $('#truncate_manual').on("click",function(){
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "7500",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            toastr["info"]("Are you sure you want to clear all the manual-settings except the most recent? <a id=\"yes-truncate\" class=\"btn btn-primary my-2\">Yes</a><a class=\"btn btn-danger my-2\">No</a>");
+            $("#yes-truncate").on('click',function(){
+                $.ajax({
+                    url: "api/manual.php",
+                    type: "POST",
+                    data: {type: "DELETE"},
+                    success: function(result){
+                        if(result=="true"){
+                            toastr["success"]("Manual-settings successfully deleted!<a href=\"settings.html\" class=\"btn btn-primary my-2\">Reload</a>");
+
+                        }else{
+                            toastr["error"]("There was some problem deleting the manual-settings.");
+                        }
+                    }
+                });
+            });
+        });
+        $(".auto_form").submit(function( event ) {
+            event.preventDefault();
+            var lowh = $('#lowh').val();
+            var mediumh = $('#mediumh').val();
+            var highh = $('#highh').val();
+            var lowt = $('#lowt').val();
+            var mediumt = $('#mediumt').val();
+            var hight = $('#hight').val();
+            $.ajax({
+                    url: "api/auto.php",
+                    type: "POST",
+                    data: {type: "INSERT", lowh: lowh, mediumh: mediumh, highh: highh, lowt: lowt, mediumt: mediumt, hight: hight},
+                    success: function(result){
+                        if(result=="true"){
+                            $("#lowh").val("");
+                            $("#mediumh").val("");
+                            $("#highh").val("");
+                            $("#lowt").val("");
+                            $("#mediumt").val("");
+                            $("#hight").val("");
+                            toastr["success"]("New auto-setting successfully added!<a href=\"settings.html\" class=\"btn btn-primary my-2\">Reload</a>");
+                        }else{
+                            toastr["error"]("There was some problem adding the auto-setting.");
+                        }
+                    }
+            });
+        });
+        $(".manual_form").submit(function( event ) {
+            event.preventDefault();
+            var speed = $('#speed').val();
+            $.ajax({
+                    url: "api/manual.php",
+                    type: "POST",
+                    data: {type: "INSERT", speed: speed},
+                    success: function(result){
+                        if(result=="true"){
+                            $('select').prop('selectedIndex', 0); 
+                            toastr["success"]("New manual-setting successfully added!<a href=\"settings.html\" class=\"btn btn-primary my-2\">Reload</a>");
+                        }else{
+                            toastr["error"]("There was some problem adding the manual-setting.");
+                        }
+                    }
+            });
+        });       
+    </script>
+  </body>
+</html>
